@@ -41,6 +41,10 @@ class Student {
             return friends;
         }
 
+        int getNFriends(){
+            friends.size();
+        }
+
 };
 
 // class Friends {
@@ -91,11 +95,12 @@ int main(){
 
     for (int i = 0; i < nStudents; i++){
         Student curr = students[i];
+        int nFriends = curr.getNFriends();
         
-        cout << "Student " << curr.getId() << " has " << curr.getNFriends() << " friends:" << endl;
+        cout << "Student " << curr.getId() << " has " << nFriends << " friends:" << endl;
         
         vector<Student> friends = curr.getFriends();
-        for (int i = 0; i < friends.size(); i++){
+        for (int i = 0; i < nFriends; i++){
             cout << friends[i].getId() << " ";
         } 
         cout << endl;
