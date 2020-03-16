@@ -42,6 +42,14 @@ class Student {
             return maxGrade; 
         }
 
+        bool wasVisited(){
+            return visited;
+        }
+
+        void setVisited(){
+            visited = true;
+        }
+
         void setMaxGrade(int maxGrade){
             this->maxGrade = maxGrade;
         }
@@ -55,23 +63,43 @@ class Student {
         }
 
         int getNFriends(){
-            friends.size();
+            return friends.size();
         }
 
 };
 
-void algorithm(vector<Student> students){
-    cout << "Students Size: " << students.size() << endl;
-    for (int i = 0; i < students.size(); i++){
-        Student curr = students[i];
-        for (int j = 0; j < curr.getNFriends(); i++){
-            if (curr.getFriends()[j].getMaxGrade() > curr.getMaxGrade()){
-                cout << "Sim" << endl;
-                curr.setMaxGrade(curr.getFriends()[j].getMaxGrade());
-            }
-        }
-    }
-}
+// int algorithm(vector<Student> &students, Student &student){
+//    cout << "Entrou em: " << student.getId() << endl;
+//     if (student.wasVisited()){   
+//         return student.getMaxGrade();
+//     }
+//     else {
+//         cout << "Numero de Amigos: " << student.getNFriends() << endl;
+//         cout << "Nota: " <<student.getMaxGrade() << endl;
+//         student.setVisited();
+//         for (int i = 0; i < student.getNFriends(); i++){;
+//             cout << "Numero de amigos do amigo: " << student.getFriends()[i].getNFriends() << endl << endl;
+            
+//             if (student.getMaxGrade() < algorithm(students, student.getFriends()[i])){
+//                 cout << "Mudou em: " << student.getId() << endl;
+//                 cout << "Amigo: " << student.getFriends()[i].getId() << endl << endl;
+//                 student.setMaxGrade(student.getFriends()[i].getMaxGrade());
+//             }
+//         }
+//     }
+// }
+
+// void algorithm(vector<Student> &students){
+//     for (int i = 0; i < students.size(); i++){
+//         Student& curr = students[i];
+//         for (int j = 0; j < curr.getNFriends(); j++){
+//             if (curr.getFriends()[j].getMaxGrade() > curr.getMaxGrade()){
+//                 curr.setMaxGrade(curr.getFriends()[j].getMaxGrade());
+//             }
+
+//         }
+//     }
+// }
 
 int main(){
     int nStudents, nRelations;
@@ -100,23 +128,25 @@ int main(){
         students[studentId-1].addFriend(students[newFriendId-1]);
     }
 
-    for (int i = 0; i < nStudents; i++){
-        Student curr = students[i];
-        int nFriends = curr.getNFriends();
+    // for (int i = 0; i < nStudents; i++){
+    //     Student curr = students[i];
+    //     int nFriends = curr.getNFriends();
         
-        cout << "Student " << curr.getId() << endl;
-        cout << "Grade " << curr.getGrade() << endl;
-        cout << "Has " << nFriends << " friends:" << endl;
+    //     cout << "Student " << curr.getId() << endl;
+    //     cout << "Grade " << curr.getGrade() << endl;
+    //     cout << "Has " << nFriends << " friends:" << endl;
         
-        vector<Student> friends = curr.getFriends();
-        for (int i = 0; i < nFriends; i++){
-            cout << friends[i].getId() << " ";
-        } 
-        cout << endl << endl;
-    }
+    //     vector<Student>* friends = curr.getFriends();
+    //     for (int i = 0; i < nFriends; i++){
+    //         cout << friends[i].getId() << " ";
+    //     } 
+    //     cout << endl << endl;
+    // }
 
-    algorithm(students);
+    //algorithm(students, students[0]);
+    
 
+    cout << "Output: " << endl;
     for(int i = 0; i < nStudents; i++){
         cout << students[i].getMaxGrade() << endl;
     }
