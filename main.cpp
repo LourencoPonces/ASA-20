@@ -33,7 +33,6 @@ class Student {
 
         void setGrade(int grade){
             this->grade = grade;
-            maxGrade = grade;
         }
 
         int getMaxGrade(){
@@ -89,7 +88,6 @@ int algorithmRecursive(vector<Student>* students, Student* student){
 
 void algorithm(vector<Student>* students){
     for (size_t i = 0; i < students->size(); i++){
-       //Alteracao no max grade
        (*students)[i].setMaxGrade(algorithmRecursive(students, &(*students)[i]));
     }
 }
