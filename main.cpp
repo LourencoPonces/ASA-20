@@ -52,6 +52,9 @@ class Student {
             visited = true;
         }
 
+        void setNotVisited(){
+            visited = false;
+        }
 
         void addFriend(Student* newFriend){
             friends.push_back(newFriend);
@@ -61,21 +64,30 @@ class Student {
             return friends;
         }
 
-        int getNFriends(){
+        size_t getNFriends(){
             return friends.size();
         }
 };
 
-int algorithm(vector<Student>* students, Student* student){
+int algorithmRecursive(vector<Student>* students, Student* student){
     if (!student->wasVisited()){
         student->setVisited();
-        for (int i = 0; i < student->getNFriends(); i++){; 
-            if (student->getMaxGrade() < algorithm(students, student->getFriends()[i])){
+        for (size_t i = 0; i < student->getNFriends(); i++){; 
+            if (student->getMaxGrade() < algorithmRecursive(students, student->getFriends()[i])){
                 student->setMaxGrade(student->getFriends()[i]->getMaxGrade());
             }
         }
     }
     return student->getMaxGrade();
+}
+
+void algorithm(vector<Student>* students){
+    for (size_t i = 0; i < students->size(); i++){
+        algorithmRecursive(students, &(*students)[i]);
+        for (size_t j = i; j < students->size(); j++){
+            (*students)[j].setNotVisited();
+        }
+    }
 }
 
 int main(){
@@ -120,7 +132,7 @@ int main(){
     //     cout << endl << endl;
     // }
 
-    algorithm(&students, &students[0]);
+    algorithm(&students);
     
     for(int i = 0; i < nStudents; i++){
         cout << students[i].getMaxGrade() << endl;
