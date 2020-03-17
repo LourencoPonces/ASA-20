@@ -15,7 +15,7 @@ class Student {
         Student(int id, int grade){
             this->id = id;
             this->grade = grade;
-            maxGrade = grade;
+            maxGrade = 0;
             visited = false;
         }
 
@@ -70,23 +70,27 @@ class Student {
 };
 
 int algorithmRecursive(vector<Student>* students, Student* student){
-    if (!student->wasVisited()){
-        student->setVisited();
-        for (size_t i = 0; i < student->getNFriends(); i++){; 
-            if (student->getMaxGrade() < algorithmRecursive(students, student->getFriends()[i])){
-                student->setMaxGrade(student->getFriends()[i]->getMaxGrade());
+    if (student->getMaxGrade() == 0){
+        if (!student->wasVisited()){
+            student->setVisited();
+            for (size_t i = 0; i < student->getNFriends(); i++){; 
+                if (student->getGrade() < algorithmRecursive(students, student->getFriends()[i])){
+                    student->setGrade(student->getFriends()[i]->getGrade());
+                }
             }
+            student->setNotVisited();
         }
+        return student->getGrade();
     }
-    return student->getMaxGrade();
+    else {
+        return student->getMaxGrade();
+    }
 }
 
 void algorithm(vector<Student>* students){
     for (size_t i = 0; i < students->size(); i++){
-        algorithmRecursive(students, &(*students)[i]);
-        for (size_t j = i; j < students->size(); j++){
-            (*students)[j].setNotVisited();
-        }
+       //Alteracao no max grade
+       (*students)[i].setMaxGrade(algorithmRecursive(students, &(*students)[i]));
     }
 }
 
@@ -140,4 +144,3 @@ int main(){
 
     return 0;
 }
-
