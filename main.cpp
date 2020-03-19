@@ -123,22 +123,6 @@ int main(){
         students[studentId-1].addFriend(newFriend);
     }
 
-    //Printing information
-    // for (int i = 0; i < nStudents; i++){
-    //     Student curr = students[i];
-    //     int nFriends = curr.getNFriends();
-        
-    //     cout << "Student " << curr.getId() << endl;
-    //     cout << "Grade " << curr.getGrade() << endl;
-    //     cout << "Has " << nFriends << " friends:" << endl;
-        
-    //     vector<Student*> friends = curr.getFriends();
-    //     for (int i = 0; i < nFriends; i++){
-    //         cout << friends[i]->getId() << " ";
-    //     } 
-    //     cout << endl << endl;
-    // }
-
     algorithm(&students);
     
     for(int i = 0; i < nStudents; i++){

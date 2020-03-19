@@ -8,23 +8,32 @@ class Scc;
 
 class Student {
     private:
-        int id;
-        int grade;
-        bool visited;
+        int id, grade, d, low;
         vector<Student*> friends;
         Scc* myScc;
-
-    
-        int d;
-        int low;
 
     public:
         Student(int id, int grade){
             this->id = id;
             this->grade = grade;
-            visited = false;
             d = -1;
             low = -1;
+        }
+
+        int getId(){
+            return id;
+        }
+
+        void setId(int id){
+            this->id = id;
+        }
+
+        int getGrade(){
+            return grade;
+        }
+
+        void setGrade(int newGrade){
+            if (newGrade > grade) grade = newGrade;
         }
 
         int getD(){
@@ -43,41 +52,8 @@ class Student {
             this->low = low;
         }
 
-
-        int getId(){
-            return id;
-        }
-
-        void setId(int id){
-            this->id = id;
-        }
-
-        int getGrade(){
-            return grade;
-        }
-
-        void setGrade(int newGrade){
-            if (newGrade > grade) grade = newGrade;
-        }
-
-        Scc* getMyScc(){
-            return myScc;
-        }
-
         void setMyScc(Scc* myScc){
             this->myScc = myScc;
-        }
-
-        bool wasVisited(){
-            return visited;
-        }
-
-        void setVisited(){
-            visited = true;
-        }
-
-        void setNotVisited(){
-            visited = false;
         }
 
         void addFriend(Student* newFriend){
@@ -95,49 +71,49 @@ class Student {
 
 class Scc {
     private:
-    vector<Student*> members;
-    int max;
+        vector<Student*> members;
+        int max;
 
     public:
-    Scc(){
-        max = -1;
-    }
-
-    int getMax(){
-        return max;
-    }
-
-    void setMax(int newMax){
-        max = newMax;
-        updateGrades();
-    }
-
-    void addMember(Student* newStudent){
-        members.push_back(newStudent);
-        int grade = newStudent->getGrade();
-        if (grade > max){
-            max = grade;
+        Scc(){
+            max = -1;
         }
-    }
 
-    vector<Student*> getMembers(){
-        return members;
-    }
-
-    size_t getNMembers(){
-        return members.size();
-    }
-
-    void updateGrades(){
-        for (size_t i = 0; i < members.size(); i++){
-            members[i]->setGrade(max);
+        int getMax(){
+            return max;
         }
-    }
+
+        void setMax(int newMax){
+            max = newMax;
+            updateGrades();
+        }
+
+        void addMember(Student* newStudent){
+            members.push_back(newStudent);
+            int grade = newStudent->getGrade();
+            if (grade > max){
+                max = grade;
+            }
+        }
+
+        vector<Student*> getMembers(){
+            return members;
+        }
+
+        size_t getNMembers(){
+            return members.size();
+        }
+
+        void updateGrades(){
+            for (size_t i = 0; i < members.size(); i++){
+                members[i]->setGrade(max);
+            }
+        }
 };
 
 
 
-void tarjanVisit(vector<Student>* students, Student* u, vector<Student*>* stack, int* visited, vector<Scc*>* sccGroup, Student* parent){
+void tarjanVisit(vector<Student>* students, vector<Student*>* stack, Student* u,  Student* parent, int* visited, vector<Scc*>* sccGroup){
     u->setD(*visited);
     u->setLow(*visited);
     stack->push_back(u);
@@ -145,42 +121,23 @@ void tarjanVisit(vector<Student>* students, Student* u, vector<Student*>* stack,
     vector<Scc*> scc; 
 
     bool isInStack;
-    //cout << "Student: " << u->getId() << endl;
-
-    
-
     for (size_t i = 0; i < u->getNFriends(); i++){
         isInStack = false;
-        //cout << "Friend: " << u->getFriends()[i]->getId() << endl;
-
-        //cout << "Student " << u->getId() << " atualizou no primeiro if para " << u->getFriends()[i]->getGrade() << endl;
         u->setGrade(u->getFriends()[i]->getGrade());
-        //Reduzir na procura da stack
-        //Criar outro vetor que guarda so boleans
         for (size_t j = 0; j < stack->size(); j++){
             if ((*stack)[j]->getId() == u->getFriends()[i]->getId())
                 isInStack = true;
         }
         if (u->getFriends()[i]->getD() == -1 || isInStack){
-            //cout << "Entra if 1" << endl;
             if (u->getFriends()[i]->getD() == -1){
-                //cout << "Entra if 2" << endl;
-                tarjanVisit(students, u->getFriends()[i], stack, visited, sccGroup, u);
+                tarjanVisit(students, stack, u->getFriends()[i], u, visited, sccGroup);
             }
             u->setLow(min(u->getLow(), u->getFriends()[i]->getLow()));
-            //cout << "Student " << u->getId() << " atualizou low: " << u->getLow() << endl;
-
         }
     }
-    //  cout << "Student " << u->getId() << " stack: " << endl;
-    //  for (size_t i = 0; i < stack->size(); i++){
-    //     //cout << (*stack)[i]->getId() << " ";
-    //  }
-    //  cout << endl;
     
     Student* v;
     if (u->getD() == u->getLow()){
-        //cout << "Entra if 3" << endl;
         Scc* currScc = new Scc();
         do {
             v = stack->back();
@@ -203,20 +160,19 @@ void sccTarjan(vector<Student>* students){
 
     for (size_t i = 0; i < students->size(); i++){
         if ((*students)[i].getD() == -1){
-            //cout << "-----------------Student: " << (*students)[i].getId() << endl;
-            tarjanVisit(students, &(*students)[i], &stack, &visited, &sccGroup, 0);
+            tarjanVisit(students, &stack, &(*students)[i], 0, &visited, &sccGroup);
         }
     }
 }
 
 int main(){
-    int nStudents, nRelations;
+    int nStudents, nRelations, studentId, newFriendId, grade;
     char comma;
+    vector<Student> students;
+    
     cin >> nStudents;
     cin >> comma;
     cin >> nRelations;
-    vector<Student> students;
-    int grade;
     
     for (int i = 0; i < nStudents; i++){
         cin >> grade;
@@ -224,8 +180,6 @@ int main(){
         students.push_back(newStudent);
     }
 
-    int studentId;
-    int newFriendId;
     Student* newFriend;
     for (int i = 0; i < nRelations; i++){
         cin >> studentId;
@@ -234,26 +188,6 @@ int main(){
         newFriend = &students[newFriendId-1];
         students[studentId-1].addFriend(newFriend);
     }
-
-    //Printing information
-    // for (int i = 0; i < nStudents; i++){
-    //     Student curr = students[i];
-    //     int nFriends = curr.getNFriends();
-        
-    //     cout << "Student " << curr.getId() << endl;
-    //     cout << "Grade " << curr.getGrade() << endl;
-    //     cout << "Has " << nFriends << " friends:" << endl;
-        
-        
-    //     vector<Student*> friends = curr.getFriends();
-    //     for (int i = 0; i < nFriends; i++){
-    //         cout << friends[i]->getId() << " ";
-    //     } 
-    //     cout << endl;
-    //     cout << "D: " << curr.getD() << endl;
-    //     cout << "Low: " << curr.getLow() << endl;
-    //     cout << endl;
-    // }
 
     sccTarjan(&students);
     
