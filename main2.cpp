@@ -10,10 +10,8 @@ class Student {
     private:
         int id;
         int grade;
-        int maxGrade;
         bool visited;
         vector<Student*> friends;
-        vector<Scc*> sccChildren;
         Scc* myScc;
 
     
@@ -24,7 +22,6 @@ class Student {
         Student(int id, int grade){
             this->id = id;
             this->grade = grade;
-            maxGrade = 0;
             visited = false;
             d = -1;
             low = -1;
@@ -59,29 +56,8 @@ class Student {
             return grade;
         }
 
-        void setGrade(int grade){
-            this->grade = grade;
-            maxGrade = grade;
-        }
-
-        int getMaxGrade(){
-            return maxGrade; 
-        }
-
-        void setMaxGrade(int maxGrade){
-            this->maxGrade = maxGrade;
-        }
-
-        void addScc(Scc* newScc){
-            sccChildren.push_back(newScc);
-        }
-        
-        vector<Scc*> getScc(){
-            return sccChildren;
-        }
-
-        size_t getNScc(){
-            return sccChildren.size();
+        void setGrade(int newGrade){
+            if (newGrade > grade) grade = newGrade;
         }
 
         Scc* getMyScc(){
@@ -138,9 +114,9 @@ class Scc {
 
     void addMember(Student* newStudent){
         members.push_back(newStudent);
-
-        if (newStudent->getGrade() > max){
-            max = newStudent->getGrade();
+        int grade = newStudent->getGrade();
+        if (grade > max){
+            max = grade;
         }
     }
 
@@ -154,40 +130,58 @@ class Scc {
 
     void updateGrades(){
         for (size_t i = 0; i < members.size(); i++){
-            members[i]->setMaxGrade(max);
+            members[i]->setGrade(max);
         }
     }
 };
 
 
 
-void tarjanVisit(vector<Student>* students, Student* u, vector<Student*>* stack, int* visited, vector<Scc*>* sccGroup, vector<Student*>* parents, Student* parent){
+void tarjanVisit(vector<Student>* students, Student* u, vector<Student*>* stack, int* visited, vector<Scc*>* sccGroup, Student* parent){
     u->setD(*visited);
     u->setLow(*visited);
     stack->push_back(u);
     *visited = *visited + 1;
     vector<Scc*> scc; 
-    bool isInStack = false;
+
+    bool isInStack;
+    //cout << "Student: " << u->getId() << endl;
+
     
+
     for (size_t i = 0; i < u->getNFriends(); i++){
         isInStack = false;
+        //cout << "Friend: " << u->getFriends()[i]->getId() << endl;
+
+        //cout << "Student " << u->getId() << " atualizou no primeiro if para " << u->getFriends()[i]->getGrade() << endl;
+        u->setGrade(u->getFriends()[i]->getGrade());
+        //Reduzir na procura da stack
+        //Criar outro vetor que guarda so boleans
         for (size_t j = 0; j < stack->size(); j++){
             if ((*stack)[j]->getId() == u->getFriends()[i]->getId())
                 isInStack = true;
         }
         if (u->getFriends()[i]->getD() == -1 || isInStack){
+            //cout << "Entra if 1" << endl;
             if (u->getFriends()[i]->getD() == -1){
-                tarjanVisit(students, u->getFriends()[i], stack, visited, sccGroup, parents, u);
+                //cout << "Entra if 2" << endl;
+                tarjanVisit(students, u->getFriends()[i], stack, visited, sccGroup, u);
             }
             u->setLow(min(u->getLow(), u->getFriends()[i]->getLow()));
+            //cout << "Student " << u->getId() << " atualizou low: " << u->getLow() << endl;
 
         }
     }
+    //  cout << "Student " << u->getId() << " stack: " << endl;
+    //  for (size_t i = 0; i < stack->size(); i++){
+    //     //cout << (*stack)[i]->getId() << " ";
+    //  }
+    //  cout << endl;
     
     Student* v;
     if (u->getD() == u->getLow()){
+        //cout << "Entra if 3" << endl;
         Scc* currScc = new Scc();
-        
         do {
             v = stack->back();
             stack->pop_back(); 
@@ -195,14 +189,10 @@ void tarjanVisit(vector<Student>* students, Student* u, vector<Student*>* stack,
             currScc->addMember(v);
             
         } while (u->getId() != v->getId());
-        if (parent != 0){
-            parents->push_back(parent);
-            parent->addScc(currScc);
-        }
-
-        sccGroup->push_back(currScc);
         currScc->updateGrades();
-        
+        if (parent != 0){
+            parent->setGrade(currScc->getMax());
+        }
     }
 }
 
@@ -210,39 +200,13 @@ void sccTarjan(vector<Student>* students){
     int visited = 0;
     vector<Student*> stack;
     vector<Scc*> sccGroup;
-    Scc currScc = Scc();
-    vector<Student*> parents;
-
 
     for (size_t i = 0; i < students->size(); i++){
         if ((*students)[i].getD() == -1){
-            tarjanVisit(students, &(*students)[i], &stack, &visited, &sccGroup, &parents, 0);
+            //cout << "-----------------Student: " << (*students)[i].getId() << endl;
+            tarjanVisit(students, &(*students)[i], &stack, &visited, &sccGroup, 0);
         }
     }
-    
-    //Printing Scc Information
-    // cout << "Tamanho do group scc: " << sccGroup.size() << endl;
-    // for (size_t i = 0; i < sccGroup.size(); i++){
-    //     cout << "Group " << i << endl;
-    //     cout << "Numero de membros: " << sccGroup[i]->getNMembers()<< endl;
-    //     cout << "Max: " << sccGroup[i]->getMax() << endl;
-    //     for (size_t j = 0; j < sccGroup[i]->getNMembers(); j++){
-    //         cout << sccGroup[i]->getMembers()[j]->getId() << " ";
-    //     }
-    //     cout << endl << endl;
-    // }
-    
-
-
-    for (size_t i = 0; i < parents.size(); i++){
-        for (size_t j = 0; j < parents[i]->getNScc(); j++){
-            if (parents[i]->getMaxGrade() < parents[i]->getScc()[j]->getMax()){
-                parents[i]->getMyScc()->setMax(parents[i]->getScc()[j]->getMax());
-            }
-        }
-    }
-
-   
 }
 
 int main(){
@@ -294,7 +258,7 @@ int main(){
     sccTarjan(&students);
     
     for(int i = 0; i < nStudents; i++){
-        cout << students[i].getMaxGrade() << endl;
+        cout << students[i].getGrade() << endl;
     }
 
     return 0;
