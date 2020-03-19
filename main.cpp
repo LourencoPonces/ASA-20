@@ -68,16 +68,16 @@ class Student {
         }
 };
 
-int algorithmRecursive(vector<Student>* students, Student* student){
+int algorithmRecursive(vector<Student>* students,  vector<Student*>* visited, Student* student){
     if (student->getMaxGrade() == 0){
         if (!student->wasVisited()){
             student->setVisited();
-            for (size_t i = 0; i < student->getNFriends(); i++){; 
-                if (student->getGrade() < algorithmRecursive(students, student->getFriends()[i])){
+            visited->push_back(student);
+            for (size_t i = 0; i < student->getNFriends(); i++){
+                if (student->getGrade() < algorithmRecursive(students, visited, student->getFriends()[i])){
                     student->setGrade(student->getFriends()[i]->getGrade());
                 }
             }
-            student->setNotVisited();
         }
         return student->getGrade();
     }
@@ -87,8 +87,13 @@ int algorithmRecursive(vector<Student>* students, Student* student){
 }
 
 void algorithm(vector<Student>* students){
+    vector<Student*> visited;
     for (size_t i = 0; i < students->size(); i++){
-       (*students)[i].setMaxGrade(algorithmRecursive(students, &(*students)[i]));
+       (*students)[i].setMaxGrade(algorithmRecursive(students, &visited, &(*students)[i]));
+       while(visited.size() != 0){
+           visited.back()->setNotVisited();
+           visited.pop_back();
+       }
     }
 }
 

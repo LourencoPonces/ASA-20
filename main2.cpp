@@ -180,16 +180,10 @@ void tarjanVisit(vector<Student>* students, Student* u, vector<Student*>* stack,
                 cout << "Entra if 2" << endl;
                 tarjanVisit(students, u->getFriends()[i], stack, visited, sccGroup);
             }
-            // cout << "Old low: " << u->getLow() << endl;
-            // cout << "Low of Friend: " << u->getFriends()[i]->getId() << " : " << u->getFriends()[i]->getLow() << endl;
-            // cout << "MIN: " << min(u->getLow(), u->getFriends()[i]->getLow()) << endl;
-            //cout << "Old low " << u->getId() << " : " << u->getLow() << endl;
             u->setLow(min(u->getLow(), u->getFriends()[i]->getLow()));
-            //cout << "New low " << u->getId() << " : " << u->getLow() << endl;
+
         }
     }
-    // cout << "D: " << u->getD() << endl;
-    // cout << "Low: " << u->getLow() << endl;
     
     Student* v;
     if (u->getD() == u->getLow()){
