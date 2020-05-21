@@ -6,7 +6,7 @@
 using namespace std; 
   
 // Number of vertices in given graph 
-#define V 12 
+#define V 40 
   
 /* Returns true if there is a path from source 's' to sink 't' in 
   residual graph. Also fills parent[] to store the path */
@@ -99,8 +99,8 @@ int main()
 { 
     // Let us create a graph shown in the above example 
     int graph[V][V] = { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+                        {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+                        {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
                         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
                         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
                         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
